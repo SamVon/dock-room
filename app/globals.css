@@ -1,26 +1,596 @@
 @import "tailwindcss";
 
+/* Duck Valley palette. Scenery sprites carry their own day / night colors (lib/sceneSprites.ts);
+   these variables color the sky, the ground and every piece of UI. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --sky: #73b9ea;
+  --sky-2: #8cc8f0;
+  --sky-3: #b4dcf5;
+  --grass: #729c46;
+  --grass-light: #9dbd63;
+  --wood: #c98148;
+  --wood-light: #e0a56e;
+  --wood-dark: #68402e;
+  --panel: #fff0d5;
+  --field: #fffaee;
+  --outline: #21191b;
+  --coral: #ef6d64;
+  --coral-dark: #b84a47;
+  --text: #21191b;
+  --muted: #7b5a48;
+  --line: #e2c9a3;
+  --hard-shadow: rgba(33, 25, 27, 0.35);
+  --online: #3e8a3a;
+  --water: #63aed6;
+  --water-edge: #4a8fbc;
 }
+
+[data-night="true"] {
+  --sky: #171b3b;
+  --sky-2: #242954;
+  --sky-3: #4d477b;
+  --grass: #345448;
+  --grass-light: #44695a;
+  --wood: #8a5a3c;
+  --wood-light: #a8734c;
+  --wood-dark: #3e2a24;
+  --panel: #231e2c;
+  --field: #322b3f;
+  --outline: #0f0c14;
+  --coral: #ef6d64;
+  --coral-dark: #a3423f;
+  --text: #f6e7cf;
+  --muted: #b3a4c4;
+  --line: #40364f;
+  --hard-shadow: rgba(0, 0, 0, 0.5);
+  --online: #7fd66b;
+  --water: #304d73;
+  --water-edge: #22395a;
+}
+
+/* Scene palettes. An event's scene picks one with data-palette; each has a day and a night look.
+   Only the sky and the ground change here; sprites carry their own day / night colors. */
+[data-palette="festival"] { --sky-3: #ffd9a8; }
+[data-night="true"] [data-palette="festival"] { --sky-2: #33295c; --sky-3: #7a4a6e; }
+
+[data-palette="spooky"] { --sky: #6b4aa8; --sky-2: #8a62c8; --sky-3: #f5a04a; --grass: #5f7f4a; --grass-light: #7a9c5c; }
+[data-night="true"] [data-palette="spooky"] { --sky: #1a1030; --sky-2: #2b1a4a; --sky-3: #6a2f5a; --grass: #2a4038; --grass-light: #375247; }
+
+[data-palette="snow"] { --sky: #a9d3f0; --sky-2: #c4e2f5; --sky-3: #e6f2fa; --grass: #eef4fa; --grass-light: #ffffff; }
+[data-night="true"] [data-palette="snow"] { --sky: #141a3a; --sky-2: #222b56; --sky-3: #46507f; --grass: #9fb4cc; --grass-light: #c4d4e6; }
+
+[data-palette="rainy"] { --sky: #7c93a8; --sky-2: #93a8ba; --sky-3: #aebfcc; --grass: #5f8748; --grass-light: #7da25c; }
+[data-night="true"] [data-palette="rainy"] { --sky: #12162c; --sky-2: #1c2240; --sky-3: #2f3757; --grass: #2b463c; --grass-light: #37584c; }
+
+[data-palette="blossom"] { --sky: #f7b8d0; --sky-2: #fbd0df; --sky-3: #ffe6ee; }
+[data-night="true"] [data-palette="blossom"] { --sky: #3a1f4a; --sky-2: #5a2f66; --sky-3: #8a4a7a; }
+
+[data-palette="bright"] { --sky: #4fb0f0; --sky-2: #7cc8f5; --sky-3: #b4e2fa; --grass: #7aa84a; --grass-light: #a6c96a; }
+
+[data-palette="sakura"] { --sky: #8fcff1; --sky-2: #b6e0f5; --sky-3: #ffd7e5; --grass: #86a85f; --grass-light: #a7c873; --water: #72bad8; --water-edge: #5a9fc0; }
+[data-night="true"] [data-palette="sakura"] { --sky: #171936; --sky-2: #252951; --sky-3: #554a78; --grass: #3e624d; --grass-light: #4f7a60; --water: #334f73; --water-edge: #26405f; }
+
+/* Loy Krathong: a warm dusk by day, and a deep night for the lights on the water. */
+[data-palette="krathong"] { --sky: #4a5a9a; --sky-2: #7a6aa8; --sky-3: #f0a878; --water: #5a8fc0; --water-edge: #4477a6; }
+[data-night="true"] [data-palette="krathong"] { --sky: #0d1030; --sky-2: #1a2456; --sky-3: #3a3f80; --water: #233a63; --water-edge: #182b4c; }
+
+/* New Year: an evening sky even by day, so lanterns and confetti stand out. */
+[data-palette="gala"] { --sky: #2b3070; --sky-2: #4a3f86; --sky-3: #e08a5a; }
+[data-night="true"] [data-palette="gala"] { --sky: #0f1230; --sky-2: #1f1f52; --sky-3: #5a3a78; }
+
+[data-palette="moonlit"] { --sky: #3a4a8a; --sky-2: #5a6aa8; --sky-3: #9a8ac0; }
+[data-night="true"] [data-palette="moonlit"] { --sky: #0d1030; --sky-2: #1a2456; --sky-3: #3a3f80; }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Readable text: Nunito for English, Noto Sans Lao for Lao. */
+  --font-sans: var(--font-nunito), var(--font-noto-sans-lao), var(--font-phetsarath), sans-serif;
+  /* Pixel font for titles, buttons and labels. It has no Lao letters, so Lao falls through. */
+  --font-pixel: var(--font-pixelify), var(--font-noto-sans-lao), var(--font-phetsarath), sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--sky);
+  color: var(--text);
+}
+
+/* --- Pixel UI kit ------------------------------------------------------------ */
+@layer components {
+  .font-pixel {
+    font-family: var(--font-pixel);
+    letter-spacing: 0.03em;
+  }
+
+  /* A border made of four shadows leaves the corners empty, which gives stepped pixel corners.
+     The last shadow is the hard drop shadow under the box. */
+  .pixel-box {
+    --b: 4px;
+    box-shadow:
+      0 calc(var(--b) * -1) 0 0 var(--outline),
+      0 var(--b) 0 0 var(--outline),
+      calc(var(--b) * -1) 0 0 0 var(--outline),
+      var(--b) 0 0 0 var(--outline),
+      0 calc(var(--b) * 2) 0 0 var(--hard-shadow);
+  }
+
+  .pixel-panel {
+    background: var(--panel);
+    color: var(--text);
+  }
+
+  .pixel-btn {
+    --b: 4px;
+    --face: var(--wood);
+    --face-light: var(--wood-light);
+    --face-dark: var(--wood-dark);
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    background: var(--face);
+    color: #fff7e6;
+    font-family: var(--font-pixel);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 0 var(--outline);
+    cursor: pointer;
+    box-shadow:
+      inset 0 4px 0 0 var(--face-light),
+      inset 0 -4px 0 0 var(--face-dark),
+      0 calc(var(--b) * -1) 0 0 var(--outline),
+      0 var(--b) 0 0 var(--outline),
+      calc(var(--b) * -1) 0 0 0 var(--outline),
+      var(--b) 0 0 0 var(--outline),
+      0 calc(var(--b) * 2) 0 0 var(--hard-shadow);
+  }
+  .pixel-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+  }
+  .pixel-btn:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 4px 0 0 var(--face-dark),
+      0 calc(var(--b) * -1) 0 0 var(--outline),
+      0 var(--b) 0 0 var(--outline),
+      calc(var(--b) * -1) 0 0 0 var(--outline),
+      var(--b) 0 0 0 var(--outline);
+  }
+  .pixel-btn:disabled {
+    cursor: not-allowed;
+    filter: grayscale(0.7) brightness(0.9);
+  }
+  .pixel-btn-coral {
+    --face: var(--coral);
+    --face-light: #ff9a8f;
+    --face-dark: var(--coral-dark);
+  }
+  .pixel-btn-cream {
+    --face: var(--field);
+    --face-light: var(--field);
+    --face-dark: var(--line);
+    color: var(--text);
+    text-shadow: none;
+  }
+
+  .pixel-input {
+    --b: 4px;
+    min-height: 44px;
+    padding: 0.4rem 0.75rem;
+    background: var(--field);
+    color: var(--text);
+    box-shadow:
+      inset 0 4px 0 0 var(--line),
+      0 calc(var(--b) * -1) 0 0 var(--outline),
+      0 var(--b) 0 0 var(--outline),
+      calc(var(--b) * -1) 0 0 0 var(--outline),
+      var(--b) 0 0 0 var(--outline);
+  }
+  .pixel-input::placeholder {
+    color: var(--muted);
+    opacity: 0.8;
+  }
+
+  .pixel-btn:focus-visible,
+  .pixel-input:focus-visible,
+  .pixel-focus:focus-visible {
+    outline: 4px solid var(--coral);
+    outline-offset: 4px;
+  }
+
+  .pixel-tag {
+    --b: 2px;
+    padding: 0 0.4rem;
+    background: var(--panel);
+    color: var(--text);
+    font-family: var(--font-pixel);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    box-shadow:
+      0 calc(var(--b) * -1) 0 0 var(--outline),
+      0 var(--b) 0 0 var(--outline),
+      calc(var(--b) * -1) 0 0 0 var(--outline),
+      var(--b) 0 0 0 var(--outline);
+  }
+  .pixel-tag-self {
+    background: var(--coral);
+    color: #fff7e6;
+  }
+  /* This duck is speaking in the voice chat right now. */
+  .pixel-tag-speaking {
+    --b: 3px;
+    --outline: var(--online);
+  }
+
+  .pixel-art {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    user-select: none;
+  }
+}
+
+/* --- Scene ------------------------------------------------------------------- */
+.scene-sky {
+  background: linear-gradient(var(--sky) 0 50%, var(--sky-2) 50% 78%, var(--sky-3) 78% 100%);
+}
+.scene-ground {
+  background-color: var(--grass);
+  background-size: 64px 64px;
+  image-rendering: pixelated;
+  border-top: 4px solid var(--outline);
+  box-shadow: inset 0 8px 0 0 var(--grass-light);
+}
+.scene-river {
+  background: var(--water);
+  border-top: 4px solid var(--outline);
+  border-bottom: 4px solid var(--outline);
+  box-shadow:
+    inset 0 8px 0 0 var(--water-edge),
+    inset 0 -8px 0 0 var(--water-edge);
+}
+.boat-race {
+  animation: boat-race linear infinite;
+}
+.lantern-glow {
+  background: repeating-linear-gradient(#ffbe67 0 4px, transparent 4px 12px);
+  opacity: 0.75;
+  animation: twinkle 1.6s steps(2) infinite;
+}
+.moon-glow {
+  background: repeating-linear-gradient(#fff0be 0 4px, transparent 4px 12px);
+  opacity: 0.6;
+  animation: twinkle 2.2s steps(2) infinite;
+}
+
+/* A krathong drifts from where it was set down to where it will be when its time is up.
+   The four positions and the timing are set per krathong; the browser does the rest. */
+.krathong {
+  left: var(--x0);
+  top: var(--y0);
+  animation-name: krathong-drift;
+  animation-duration: var(--drift-ms);
+  animation-delay: var(--drift-delay);
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+.krathong-bob {
+  animation: krathong-bob 2s steps(2) infinite;
+}
+/* Plays its frames once and stops on the last one. */
+.sprite-once {
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+.fx-crouch {
+  transform-origin: 50% 100%;
+  animation: fx-crouch 1.8s steps(8) both;
+}
+
+/* Sakura petals: each one falls through the scene, drifting with the wind, turning through its frames. */
+.petal {
+  top: -6%;
+  animation: petal-fall linear infinite;
+}
+.petal-gust {
+  animation: petal-gust 2.6s linear both;
+}
+/* Branches and anything else light enough to move in the breeze. */
+.wind-sway {
+  transform-origin: 0 0;
+  animation: wind-sway 5s steps(4) infinite alternate;
+}
+
+/* Particles: one element per effect. A small tile repeats and scrolls by exactly one tile, so the loop is seamless. */
+.particles {
+  background-repeat: repeat;
+  background-size: var(--tile) var(--tile);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.particles-fall {
+  animation-name: particles-fall;
+}
+.particles-rise {
+  animation-name: particles-rise;
+}
+.particles-twinkle {
+  animation-name: particles-twinkle;
+  animation-timing-function: steps(4);
+}
+.fog-band {
+  background: rgba(255, 255, 255, 0.22);
+  animation: fog-drift 14s ease-in-out infinite alternate;
+}
+/* Storm lightning: a faint, slow flicker far apart. Never a hard flash. */
+.lightning {
+  opacity: 0;
+  animation: lightning 16s linear infinite;
+}
+
+/* A sprite sheet of any shape: --w and --h are one frame's size on screen. */
+.sprite-sheet {
+  width: var(--w);
+  height: var(--h);
+  background-repeat: no-repeat;
+  background-size: calc(var(--w) * var(--frames)) var(--h);
+  animation: sheet var(--duration, 1s) steps(var(--frames)) infinite;
+}
+.cloud-drift {
+  animation: cloud-drift linear infinite;
+}
+.stars::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  color: #fff0be;
+  background: currentColor;
+  animation: twinkle 3s steps(2) infinite;
+  box-shadow:
+    8vw 6vh, 17vw 22vh, 26vw 9vh, 34vw 30vh, 41vw 14vh, 52vw 5vh, 58vw 26vh,
+    66vw 12vh, 74vw 32vh, 81vw 7vh, 89vw 20vh, 95vw 34vh, 12vw 34vh, 47vw 36vh;
+}
+.ripple {
+  background: rgba(255, 255, 255, 0.55);
+  animation: ripple 2.4s steps(3) infinite;
+}
+.target-mark {
+  animation: target 0.7s steps(4) forwards;
+}
+
+/* --- Duck -------------------------------------------------------------------- */
+/* --size is the sprite's size on screen; one sprite pixel is a 16th of it. */
+.duck-sprite {
+  --px: calc(var(--size) / 16);
+  width: var(--size);
+  height: var(--size);
+  background-repeat: no-repeat;
+  background-size: calc(var(--size) * var(--frames)) var(--size);
+  animation: sprite var(--duration, 1s) steps(var(--frames)) var(--loops, infinite);
+}
+.duck-bob {
+  animation: duck-bob 1.2s steps(2) infinite;
+}
+.duck-hop {
+  animation: duck-bob 0.3s steps(2) infinite;
+}
+.duck-sway {
+  animation: duck-sway 0.8s steps(4) infinite;
+}
+.duck-note {
+  animation: float-up 1.6s steps(6) infinite;
+}
+/* A wearable's own small animation, on top of moving with the duck. */
+.wear-wobble {
+  transform-origin: 50% 100%;
+  animation: wear-wobble 1.6s steps(2) infinite;
+}
+.wear-sparkle {
+  text-shadow: 1px 1px 0 var(--outline);
+  animation: wear-sparkle 3s steps(6) infinite;
+}
+/* Sticker interactions */
+.fx-pop {
+  animation: fx-pop 0.5s steps(5) both;
+}
+.fx-twinkle {
+  animation: twinkle 0.8s steps(2) infinite;
+}
+.fx-shake {
+  animation: fx-shake 0.24s steps(2) infinite;
+}
+.fx-recoil {
+  animation: fx-recoil 0.9s steps(6) both;
+}
+.fx-fade {
+  animation: fx-fade 1.6s linear both !important; /* the one effect that still runs with reduced motion: a plain fade */
+}
+.duck-wander {
+  animation: wander var(--wander, 18s) linear infinite;
+}
+.pop-in {
+  animation: pop-in 0.16s steps(3);
+}
+.eq-bar {
+  animation: eq 0.8s steps(4) infinite;
+  transform-origin: bottom;
+}
+
+@keyframes sprite {
+  to { background-position-x: calc(var(--size) * var(--frames) * -1); }
+}
+@keyframes duck-bob {
+  50% { transform: translateY(calc(var(--size, 64px) / -16)); }
+}
+@keyframes duck-sway {
+  0% { transform: translate(calc(var(--size, 64px) / -16), 0); }
+  25% { transform: translate(0, calc(var(--size, 64px) / -16)); }
+  50% { transform: translate(calc(var(--size, 64px) / 16), 0); }
+  75% { transform: translate(0, calc(var(--size, 64px) / -16)); }
+}
+@keyframes float-up {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-24px); opacity: 0; }
+}
+@keyframes wear-wobble {
+  0% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes wear-sparkle {
+  0%, 60% { opacity: 0; }
+  70%, 90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes fx-pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+@keyframes fx-shake {
+  0% { transform: translateX(calc(var(--size, 64px) / -16)); }
+  50% { transform: translateX(calc(var(--size, 64px) / 16)); }
+}
+@keyframes fx-recoil {
+  0%, 30% { transform: translateX(0); }
+  45% { transform: translateX(calc(var(--size, 64px) / 8)); }
+  60% { transform: translate(calc(var(--size, 64px) / -8), calc(var(--size, 64px) / -8)); }
+  100% { transform: translateX(0); }
+}
+@keyframes fx-fade {
+  0% { opacity: 0; }
+  20%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes wander {
+  0% { transform: translateX(0) scaleX(1); }
+  49.9% { transform: translateX(var(--walk, 160px)) scaleX(1); }
+  50% { transform: translateX(var(--walk, 160px)) scaleX(-1); }
+  99.9% { transform: translateX(0) scaleX(-1); }
+  100% { transform: translateX(0) scaleX(1); }
+}
+@keyframes krathong-drift {
+  from { left: var(--x0); top: var(--y0); opacity: 1; }
+  95% { opacity: 1; }
+  to { left: var(--x1); top: var(--y1); opacity: 0; }
+}
+@keyframes krathong-bob {
+  50% { transform: translateY(3px); }
+}
+@keyframes fx-crouch {
+  0%, 100% { transform: scaleY(1); }
+  25%, 60% { transform: scaleY(0.8); }
+}
+@keyframes petal-fall {
+  from { top: -6%; transform: translateX(0); }
+  to { top: 104%; transform: translateX(var(--drift, 60px)); }
+}
+@keyframes petal-gust {
+  from { left: -8%; transform: translateY(0); opacity: 1; }
+  to { left: 108%; transform: translateY(var(--drop, 60px)); opacity: 0.6; }
+}
+@keyframes wind-sway {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(1.5deg); }
+}
+@keyframes particles-fall {
+  to { background-position: var(--dx, 0px) var(--tile); }
+}
+@keyframes particles-rise {
+  to { background-position: var(--dx, 0px) calc(var(--tile) * -1); }
+}
+@keyframes particles-twinkle {
+  0% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+@keyframes fog-drift {
+  from { transform: translateX(-4%); }
+  to { transform: translateX(4%); }
+}
+@keyframes lightning {
+  0%, 95%, 100% { opacity: 0; }
+  96% { opacity: 0.1; }
+  97.5% { opacity: 0.03; }
+  98.5% { opacity: 0.08; }
+}
+@keyframes sheet {
+  to { background-position-x: calc(var(--w) * var(--frames) * -1); }
+}
+@keyframes boat-race {
+  from { transform: translateX(-260px); }
+  to { transform: translateX(100vw); }
+}
+@keyframes cloud-drift {
+  from { transform: translateX(-30vw); }
+  to { transform: translateX(110vw); }
+}
+@keyframes twinkle {
+  50% { opacity: 0.55; }
+}
+@keyframes ripple {
+  from { transform: translateX(0); }
+  to { transform: translateX(12px); }
+}
+@keyframes target {
+  0% { transform: translate(-50%, -50%) scale(1.6); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+}
+@keyframes pop-in {
+  from { transform: translateY(8px); opacity: 0; }
+}
+@keyframes eq {
+  0% { transform: scaleY(0.3); }
+  25% { transform: scaleY(1); }
+  50% { transform: scaleY(0.5); }
+  75% { transform: scaleY(0.8); }
+}
+
+/* Reduced motion: from the system setting, or from the in-game Settings menu.
+   Sprites hold their first frame; ducks still glide to where they are going. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+  }
+}
+:root[data-calm="true"] *,
+:root[data-calm="true"] *::before,
+:root[data-calm="true"] *::after {
+  animation: none !important;
+}
+
+/* Default duck size on screen: 16 sprite pixels drawn 4x (3x on phones). */
+:root {
+  --size: 64px;
+}
+@media (max-width: 640px) {
+  :root {
+    --size: 48px;
+  }
+}
+
+/* With reduced motion, a matched sticker still shows: a still badge that simply fades in and out. */
+:root[data-calm="true"] .fx-fade.fx-fade {
+  animation: fx-fade 1.6s linear both !important;
+}
+
+/* A krathong's slow drift is the feature itself, not decoration, so it keeps moving with reduced
+   motion. Its bobbing, flame and ripple are stopped by the rules above. */
+@media (prefers-reduced-motion: reduce) {
+  .krathong {
+    animation-name: krathong-drift !important;
+    animation-duration: var(--drift-ms) !important;
+    animation-delay: var(--drift-delay) !important;
+    animation-timing-function: linear !important;
+    animation-fill-mode: both !important;
+  }
+}
+:root[data-calm="true"] .krathong {
+  animation-name: krathong-drift !important;
+  animation-duration: var(--drift-ms) !important;
+  animation-delay: var(--drift-delay) !important;
+  animation-timing-function: linear !important;
+  animation-fill-mode: both !important;
 }

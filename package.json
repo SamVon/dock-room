@@ -3,14 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "tsx server/index.ts",
     "build": "next build",
-    "start": "next start"
+    "start": "NODE_ENV=production tsx server/index.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "share": "node scripts/share.mjs",
+    "admin": "tsx scripts/admin.ts"
   },
   "dependencies": {
+    "@next/env": "^16.3.8",
     "next": "16.3.8",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "socket.io": "^4.8.4",
+    "socket.io-client": "^4.8.4",
+    "tsx": "^4.23.15",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
